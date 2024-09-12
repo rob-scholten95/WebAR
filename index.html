@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AR.js Marker-based Example</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/2.0.0/aframe/build/aframe-ar.js"></script>
+  </head>
+  <body style="margin: 0px; overflow: hidden;">
+    <!-- AR.js Scene -->
+    <a-scene embedded arjs="sourceType: webcam;">
+
+      <!-- Camera -->
+      <a-marker preset="pattern" url="">
+        <!-- 3D model of the building to be overlayed on the marker -->
+        <a-entity 
+          gltf-model="url(path/to/your/3d-model.gltf)"
+          position="0 0 0"
+          scale="1 1 1"
+          rotation="0 0 0">
+        </a-entity>
+      </a-marker>
+
+      <a-entity camera></a-entity>
+
+    </a-scene>
+  </body>
+</html>
