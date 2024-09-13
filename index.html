@@ -50,21 +50,28 @@
       // Get the element to update the coordinates
       const gpsCoordinatesDiv = document.getElementById('gps-coordinates');
 
-      // Use Geolocation API to get the current position
+      // Watch for position changes using Geolocation API
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
+        const watchId = navigator.geolocation.watchPosition(function(position) {
           const latitude = position.coords.latitude.toFixed(6);
           const longitude = position.coords.longitude.toFixed(6);
-          
+
           // Update the div with the coordinates
           gpsCoordinatesDiv.innerHTML = `Latitude: ${latitude}<br>Longitude: ${longitude}`;
-          
+
           console.log('Latitude: ' + latitude);
           console.log('Longitude: ' + longitude);
         }, function(error) {
           console.error('Error getting location:', error);
           gpsCoordinatesDiv.innerHTML = 'Error getting GPS location: ' + error.message;
+        }, {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
         });
+
+        // Optionally, you can stop watching after a certain event or condition:
+        // navigator.geolocation.clearWatch(watchId);
       } else {
         gpsCoordinatesDiv.innerHTML = 'Geolocation is not supported by this browser.';
         console.log('Geolocation is not supported by this browser.');
