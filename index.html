@@ -62,16 +62,17 @@
           console.log('Latitude: ' + latitude);
           console.log('Longitude: ' + longitude);
         }, function(error) {
-          console.error('Error getting location:', error);
-          gpsCoordinatesDiv.innerHTML = 'Error getting GPS location: ' + error.message;
+          if (error.code === error.TIMEOUT) {
+            gpsCoordinatesDiv.innerHTML = 'GPS location acquisition timed out. Try again outdoors.';
+          } else {
+            console.error('Error getting location:', error);
+            gpsCoordinatesDiv.innerHTML = 'Error getting GPS location: ' + error.message;
+          }
         }, {
-          enableHighAccuracy: true,
-          timeout: 10000,
+          enableHighAccuracy: true, // Change to false if high accuracy takes too long
+          timeout: 20000, // Extend timeout to 20 seconds
           maximumAge: 0
         });
-
-        // Optionally, you can stop watching after a certain event or condition:
-        // navigator.geolocation.clearWatch(watchId);
       } else {
         gpsCoordinatesDiv.innerHTML = 'Geolocation is not supported by this browser.';
         console.log('Geolocation is not supported by this browser.');
