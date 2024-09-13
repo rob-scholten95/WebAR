@@ -1,77 +1,152 @@
-<script>
-  const gpsCoordinatesDiv = document.getElementById('gps-coordinates');
-  const compassNeedle = document.getElementById('compass-needle');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR.js with Compass and Distance</title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 
-  let lastPosition = { latitude: null, longitude: null };
-  const entityPosition = { latitude: 52.158083, longitude: 5.372243 }; // Example target entity coordinates
-  const threshold = 0.01; // Threshold for model updates
-
-  // Watch GPS position and update bearing
-  if (navigator.geolocation) {
-    navigator.geolocation.watchPosition(function(position) {
-      const latitude = position.coords.latitude.toFixed(6);
-      const longitude = position.coords.longitude.toFixed(6);
-
-      // Always update the compass bearing, ignoring vertical movement
-      const bearing = calculateBearing(latitude, longitude, entityPosition.latitude, entityPosition.longitude);
-
-      // Add default 90-degree rotation to the compass
-      const adjustedBearing = (bearing + 90) % 360; // Rotate the compass by default 90 degrees
-      compassNeedle.style.transform = `rotate(${adjustedBearing}deg)`;
-
-      // Only update the model's position if the change exceeds the threshold
-      if (shouldUpdatePosition(latitude, longitude)) {
-        lastPosition.latitude = latitude;
-        lastPosition.longitude = longitude;
-
-        gpsCoordinatesDiv.innerHTML = `Latitude: ${latitude}<br>Longitude: ${longitude}`;
-
-        // Perform any updates for the model here (for example, changing its visibility or reloading its data)
-        // Since the model is jittery, this part will only update when there's a significant change in GPS position.
-      }
-    }, function(error) {
-      gpsCoordinatesDiv.innerHTML = 'Error getting GPS location: ' + error.message;
-    }, {
-      enableHighAccuracy: true,
-      timeout: 20000,
-      maximumAge: 0
-    });
-  } else {
-    gpsCoordinatesDiv.innerHTML = 'Geolocation not supported by this browser.';
-  }
-
-  // Calculate bearing between two GPS coordinates using the Haversine formula (ignoring vertical movement)
-  function calculateBearing(lat1, lon1, lat2, lon2) {
-    const toRadians = (deg) => deg * Math.PI / 180;
-    const toDegrees = (rad) => rad * 180 / Math.PI;
-
-    const dLon = toRadians(lon2 - lon1);
-    const y = Math.sin(dLon) * Math.cos(toRadians(lat2));
-    const x = Math.cos(toRadians(lat1)) * Math.sin(toRadians(lat2)) - 
-              Math.sin(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.cos(dLon);
-
-    let bearing = toDegrees(Math.atan2(y, x));
-    bearing = (bearing + 360) % 360; // Normalize to 0-360 degrees
-
-    return bearing;
-  }
-
-  // Check if the position change exceeds the threshold for model updates
-  function shouldUpdatePosition(lat, lon) {
-    if (lastPosition.latitude === null || lastPosition.longitude === null) {
-      return true;
+  <style>
+    #gps-coordinates {
+      position: fixed;
+      bottom: 60px;
+      left: 10px;
+      color: white;
+      font-size: 18px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 5px;
+      z-index: 10;
     }
 
-    const latDiff = Math.abs(lat - lastPosition.latitude);
-    const lonDiff = Math.abs(lon - lastPosition.longitude);
+    /* Styling for the compass */
+    #compass {
+      position: fixed;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 50px;
+      z-index: 10;
+    }
+    #compass img {
+      width: 100%;
+      height: 100%;
+      transform-origin: center;
+    }
 
-    return latDiff > threshold || lonDiff > threshold;
-  }
+    /* Styling for the distance */
+    #distance {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 18px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 5px;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="gps-coordinates">Waiting for GPS...</div>
+  <div id="compass">
+    <img id="compass-needle" src="assets/compass.png" alt="Compass">
+  </div>
+  <div id="distance">Distance: Calculating...</div>
 
-  // Listen for device orientation to rotate the compass smoothly, with default 90-degree adjustment
-  window.addEventListener('deviceorientation', function(event) {
-    const alpha = event.alpha; // Alpha represents the rotation around z-axis
-    const adjustedAlpha = (alpha + 90) % 360; // Add default 90-degree rotation
-    compassNeedle.style.transform = `rotate(${adjustedAlpha}deg)`; // Apply rotation to compass needle
-  }, true);
-</script>
+  <!-- AR.js Scene with Webcam source -->
+  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: true;">
+    <!-- Explicitly define the camera with a field of view (fov) to avoid zoom-in -->
+    <a-camera gps-camera="simulateAltitude: false" fov="80"></a-camera>
+
+    <!-- Place 3D model at a specific GPS location -->
+    <a-entity 
+      gps-entity-place="latitude: 52.158083; longitude: 5.372243;"
+      gltf-model="url(assets/kerk.glb)"
+      scale="1 1 1">
+    </a-entity>
+  </a-scene>
+
+  <script>
+    const gpsCoordinatesDiv = document.getElementById('gps-coordinates');
+    const compassNeedle = document.getElementById('compass-needle');
+  
+    let lastPosition = { latitude: null, longitude: null };
+    const entityPosition = { latitude: 52.158083, longitude: 5.372243 }; // Example target entity coordinates
+    const threshold = 0.01; // Threshold for model updates
+  
+    // Watch GPS position and update bearing
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition(function(position) {
+        const latitude = position.coords.latitude.toFixed(6);
+        const longitude = position.coords.longitude.toFixed(6);
+  
+        // Always update the compass bearing, ignoring vertical movement
+        const bearing = calculateBearing(latitude, longitude, entityPosition.latitude, entityPosition.longitude);
+  
+        // Add default 90-degree rotation to the compass
+        const adjustedBearing = (bearing + 90) % 360; // Rotate the compass by default 90 degrees
+        compassNeedle.style.transform = `rotate(${adjustedBearing}deg)`;
+  
+        // Only update the model's position if the change exceeds the threshold
+        if (shouldUpdatePosition(latitude, longitude)) {
+          lastPosition.latitude = latitude;
+          lastPosition.longitude = longitude;
+  
+          gpsCoordinatesDiv.innerHTML = `Latitude: ${latitude}<br>Longitude: ${longitude}`;
+  
+          // Perform any updates for the model here (for example, changing its visibility or reloading its data)
+          // Since the model is jittery, this part will only update when there's a significant change in GPS position.
+        }
+      }, function(error) {
+        gpsCoordinatesDiv.innerHTML = 'Error getting GPS location: ' + error.message;
+      }, {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 0
+      });
+    } else {
+      gpsCoordinatesDiv.innerHTML = 'Geolocation not supported by this browser.';
+    }
+  
+    // Calculate bearing between two GPS coordinates using the Haversine formula (ignoring vertical movement)
+    function calculateBearing(lat1, lon1, lat2, lon2) {
+      const toRadians = (deg) => deg * Math.PI / 180;
+      const toDegrees = (rad) => rad * 180 / Math.PI;
+  
+      const dLon = toRadians(lon2 - lon1);
+      const y = Math.sin(dLon) * Math.cos(toRadians(lat2));
+      const x = Math.cos(toRadians(lat1)) * Math.sin(toRadians(lat2)) - 
+                Math.sin(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.cos(dLon);
+  
+      let bearing = toDegrees(Math.atan2(y, x));
+      bearing = (bearing + 360) % 360; // Normalize to 0-360 degrees
+  
+      return bearing;
+    }
+  
+    // Check if the position change exceeds the threshold for model updates
+    function shouldUpdatePosition(lat, lon) {
+      if (lastPosition.latitude === null || lastPosition.longitude === null) {
+        return true;
+      }
+  
+      const latDiff = Math.abs(lat - lastPosition.latitude);
+      const lonDiff = Math.abs(lon - lastPosition.longitude);
+  
+      return latDiff > threshold || lonDiff > threshold;
+    }
+  
+    // Listen for device orientation to rotate the compass smoothly, with default 90-degree adjustment
+    window.addEventListener('deviceorientation', function(event) {
+      const alpha = event.alpha; // Alpha represents the rotation around z-axis
+      const adjustedAlpha = (alpha + 90) % 360; // Add default 90-degree rotation
+      compassNeedle.style.transform = `rotate(${adjustedAlpha}deg)`; // Apply rotation to compass needle
+    }, true);
+  </script>
+</body>
+</html>
