@@ -24,6 +24,13 @@
     <!-- AR.js Scene with Webcam source -->
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: true;">
       <a-camera id="camera" gps-camera></a-camera> <!-- Enable gps-camera for AR.js -->
+
+      <a-entity 
+        gps-entity-place="latitude: 52.15806; longitude: 5.372301;"
+        gltf-model="url(https://rob-scholten95.github.io/WebAR/monkey.gltf)"
+        scale="10 10 10">
+      </a-entity>
+
     </a-scene>
 
     <script>
