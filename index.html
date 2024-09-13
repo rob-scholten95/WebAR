@@ -1,27 +1,34 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AR.js Marker-based Example</title>
+    <title>AR.js Location-based Example</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component/dist/aframe-environment-component.min.js"></script>
     <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/2.0.0/aframe/build/aframe-ar.js"></script>
+    <script src="https://unpkg.com/aframe-gps-component/dist/aframe-gps-component.min.js"></script>
   </head>
   <body style="margin: 0px; overflow: hidden;">
-    <!-- AR.js Scene -->
-    <a-scene embedded arjs="sourceType: webcam;">
+    <!-- AR.js Scene with GPS -->
+    <a-scene 
+      vr-mode-ui="enabled: false" 
+      embedded 
+      arjs="sourceType: webcam; debugUIEnabled: true;" 
+      gps-camera="simulateAltitude: false;">
 
-      <!-- Camera -->
-      <a-marker preset="pattern" url="https://robscholten95.github.io/WebAR/pattern.patt">
-        <!-- 3D model of the building to be overlayed on the marker -->
-        <a-entity 
-          gltf-model="url(https://rob-scholten95.github.io/WebAR/monkey.gltf)"
-          position="0 0 0"
-          scale="1 1 1"
-          rotation="0 0 0">
-        </a-entity>
-      </a-marker>
+      <!-- 3D model (GLTF) that appears at a specific GPS location -->
+      <a-entity 
+        gps-entity-place="latitude: 52.157832; longitude: 5.372636;"
+        gltf-model="url(https://rob-scholten95.github.io/WebAR/monkey.gltf)"
+        scale="1 1 1"
+        position="0 0 0"
+        rotation="0 0 0">
+      </a-entity>
 
-      <a-entity camera></a-entity>
+      <!-- Camera with GPS tracking -->
+      <a-entity camera gps-camera rotation-reader></a-entity>
 
     </a-scene>
   </body>
 </html>
+
+
