@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
   <head>
     <title>AR.js Location-based Example</title>
@@ -22,17 +22,17 @@
     </style>
   </head>
   <body style="margin: 0px; overflow: hidden;">
-    <!-- Display GPS coordinates -->
+   
     <div id="gps-coordinates">Waiting for GPS...</div>
 
-    <!-- AR.js Scene with GPS -->
+ 
     <a-scene 
       vr-mode-ui="enabled: false" 
       embedded 
       arjs="sourceType: webcam; debugUIEnabled: true;" 
       gps-camera="simulateAltitude: true;">
 
-      <!-- 3D model (GLTF) that appears at a specific GPS location -->
+   
       <a-entity 
         gps-entity-place="latitude: 52.15806; longitude: 5.372301;"
         gltf-model="url(https://rob-scholten95.github.io/WebAR/monkey.gltf)"
@@ -41,16 +41,16 @@
         rotation="0 0 0">
       </a-entity>
 
-      <!-- Camera with GPS tracking -->
+  
       <a-entity camera gps-camera rotation-reader></a-entity>
 
     </a-scene>
 
     <script>
-      // Get the element to update the coordinates
+    
       const gpsCoordinatesDiv = document.getElementById('gps-coordinates');
 
-      // Watch for position changes using Geolocation API
+  
       if (navigator.geolocation) {
         const watchId = navigator.geolocation.watchPosition(function(position) {
           const latitude = position.coords.latitude.toFixed(6);
@@ -70,12 +70,40 @@
           }
         }, {
           enableHighAccuracy: false, // Change to false if high accuracy takes too long
-          timeout: 20000, // Extend timeout to 20 seconds
+          timeout: 5000, // 
           maximumAge: 0
         });
       } else {
         gpsCoordinatesDiv.innerHTML = 'Geolocation is not supported by this browser.';
         console.log('Geolocation is not supported by this browser.');
+      }
+    </script>
+  </body>
+</html> -->
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>Geolocation Test</h1>
+    <p id="gps-coordinates">Waiting for GPS...</p>
+
+    <script>
+      const gpsCoordinatesDiv = document.getElementById('gps-coordinates');
+
+      if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(function(position) {
+          const latitude = position.coords.latitude.toFixed(6);
+          const longitude = position.coords.longitude.toFixed(6);
+          
+          gpsCoordinatesDiv.innerHTML = `Latitude: ${latitude}<br>Longitude: ${longitude}`;
+        }, function(error) {
+          gpsCoordinatesDiv.innerHTML = 'Error: ' + error.message;
+        }, {
+          enableHighAccuracy: true,
+          timeout: 20000,
+          maximumAge: 0
+        });
+      } else {
+        gpsCoordinatesDiv.innerHTML = 'Geolocation not supported.';
       }
     </script>
   </body>
