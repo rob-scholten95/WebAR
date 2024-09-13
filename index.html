@@ -68,7 +68,7 @@
           const latitude = position.coords.latitude.toFixed(6);
           const longitude = position.coords.longitude.toFixed(6);
     
-          // Always update the compass bearing
+          // Always update the compass bearing, ignoring vertical movement
           const bearing = calculateBearing(latitude, longitude, entityPosition.latitude, entityPosition.longitude);
     
           // Add default 90-degree rotation to the compass
@@ -96,7 +96,7 @@
         gpsCoordinatesDiv.innerHTML = 'Geolocation not supported by this browser.';
       }
     
-      // Calculate bearing between two GPS coordinates using the Haversine formula
+      // Calculate bearing between two GPS coordinates using the Haversine formula (ignoring vertical movement)
       function calculateBearing(lat1, lon1, lat2, lon2) {
         const toRadians = (deg) => deg * Math.PI / 180;
         const toDegrees = (rad) => rad * 180 / Math.PI;
@@ -130,8 +130,6 @@
         const adjustedAlpha = (alpha + 90) % 360; // Add default 90-degree rotation
         compassNeedle.style.transform = `rotate(${adjustedAlpha}deg)`; // Apply rotation to compass needle
       }, true);
-    
     </script>
-    
   </body>
 </html>
