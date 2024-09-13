@@ -69,7 +69,7 @@
             gpsCoordinatesDiv.innerHTML = 'Error getting GPS location: ' + error.message;
           }
         }, {
-          enableHighAccuracy: true, // Change to false if high accuracy takes too long
+          enableHighAccuracy: false, // Change to false if high accuracy takes too long
           timeout: 20000, // Extend timeout to 20 seconds
           maximumAge: 0
         });
