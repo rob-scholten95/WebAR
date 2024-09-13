@@ -47,14 +47,26 @@
     </a-scene>
 
     <script>
+      // Get the element to update the coordinates
+      const gpsCoordinatesDiv = document.getElementById('gps-coordinates');
+
+      // Use Geolocation API to get the current position
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
-          console.log('Latitude: ' + position.coords.latitude);
-          console.log('Longitude: ' + position.coords.longitude);
+          const latitude = position.coords.latitude.toFixed(6);
+          const longitude = position.coords.longitude.toFixed(6);
+          
+          // Update the div with the coordinates
+          gpsCoordinatesDiv.innerHTML = `Latitude: ${latitude}<br>Longitude: ${longitude}`;
+          
+          console.log('Latitude: ' + latitude);
+          console.log('Longitude: ' + longitude);
         }, function(error) {
           console.error('Error getting location:', error);
+          gpsCoordinatesDiv.innerHTML = 'Error getting GPS location: ' + error.message;
         });
       } else {
+        gpsCoordinatesDiv.innerHTML = 'Geolocation is not supported by this browser.';
         console.log('Geolocation is not supported by this browser.');
       }
     </script>
