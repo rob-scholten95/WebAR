@@ -1,9 +1,7 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
-    <title>AR.js Location-based Example</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://unpkg.com/aframe-environment-component/dist/aframe-environment-component.min.js"></script>
     <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/2.0.0/aframe/build/aframe-ar.js"></script>
     <script src="https://unpkg.com/aframe-gps-component/dist/aframe-gps-component.min.js"></script>
 
@@ -21,90 +19,30 @@
       }
     </style>
   </head>
-  <body style="margin: 0px; overflow: hidden;">
-   
+  <body>
     <div id="gps-coordinates">Waiting for GPS...</div>
 
- 
-    <a-scene 
-      vr-mode-ui="enabled: false" 
-      embedded 
-      arjs="sourceType: webcam; debugUIEnabled: true;" 
-      gps-camera="simulateAltitude: true;">
-
-   
-      <a-entity 
-        gps-entity-place="latitude: 52.15806; longitude: 5.372301;"
-        gltf-model="url(https://rob-scholten95.github.io/WebAR/monkey.gltf)"
-        scale="10 10 10"
-        position="0 0 0"
-        rotation="0 0 0">
-      </a-entity>
-
-  
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: true;">
       <a-entity camera gps-camera rotation-reader></a-entity>
-
     </a-scene>
 
     <script>
-    
       const gpsCoordinatesDiv = document.getElementById('gps-coordinates');
 
-  
-      if (navigator.geolocation) {
-        const watchId = navigator.geolocation.watchPosition(function(position) {
-          const latitude = position.coords.latitude.toFixed(6);
-          const longitude = position.coords.longitude.toFixed(6);
+      // Listen for GPS updates from the gps-camera
+      document.querySelector('[gps-camera]').addEventListener('gps-camera-update-position', function(event) {
+        const latitude = event.detail.position.latitude.toFixed(6);
+        const longitude = event.detail.position.longitude.toFixed(6);
+        
+        // Update GPS coordinates on the screen
+        gpsCoordinatesDiv.innerHTML = `Latitude: ${latitude}<br>Longitude: ${longitude}`;
+        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+      });
 
-          // Update the div with the coordinates
-          gpsCoordinatesDiv.innerHTML = `Latitude: ${latitude}<br>Longitude: ${longitude}`;
-
-          console.log('Latitude: ' + latitude);
-          console.log('Longitude: ' + longitude);
-        }, function(error) {
-          if (error.code === error.TIMEOUT) {
-            gpsCoordinatesDiv.innerHTML = 'GPS location acquisition timed out. Try again outdoors.';
-          } else {
-            console.error('Error getting location:', error);
-            gpsCoordinatesDiv.innerHTML = 'Error getting GPS location: ' + error.message;
-          }
-        }, {
-          enableHighAccuracy: false, // Change to false if high accuracy takes too long
-          timeout: 5000, // 
-          maximumAge: 0
-        });
-      } else {
-        gpsCoordinatesDiv.innerHTML = 'Geolocation is not supported by this browser.';
-        console.log('Geolocation is not supported by this browser.');
-      }
-    </script>
-  </body>
-</html> -->
-<!DOCTYPE html>
-<html>
-  <body>
-    <h1>Geolocation Test</h1>
-    <p id="gps-coordinates">Waiting for GPS...</p>
-
-    <script>
-      const gpsCoordinatesDiv = document.getElementById('gps-coordinates');
-
-      if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(function(position) {
-          const latitude = position.coords.latitude.toFixed(6);
-          const longitude = position.coords.longitude.toFixed(6);
-          
-          gpsCoordinatesDiv.innerHTML = `Latitude: ${latitude}<br>Longitude: ${longitude}`;
-        }, function(error) {
-          gpsCoordinatesDiv.innerHTML = 'Error: ' + error.message;
-        }, {
-          enableHighAccuracy: true,
-          timeout: 20000,
-          maximumAge: 0
-        });
-      } else {
-        gpsCoordinatesDiv.innerHTML = 'Geolocation not supported.';
-      }
+      // Error handling
+      document.querySelector('[gps-camera]').addEventListener('gps-camera-error', function(event) {
+        gpsCoordinatesDiv.innerHTML = 'Error getting GPS location: ' + event.detail.error;
+      });
     </script>
   </body>
 </html>
