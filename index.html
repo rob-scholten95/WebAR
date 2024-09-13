@@ -40,7 +40,7 @@
       const gpsCoordinatesDiv = document.getElementById('gps-coordinates');
     
       let lastPosition = { latitude: null, longitude: null };
-      const threshold = 0.00001; // Define the threshold for ignoring small changes
+      const threshold = 0.01; // Define the threshold for ignoring small changes
     
       if (navigator.geolocation) {
         navigator.geolocation.watchPosition(function(position) {
