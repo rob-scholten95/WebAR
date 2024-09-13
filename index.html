@@ -44,9 +44,9 @@
   </div>
 
   <!-- AR.js Scene with Webcam source -->
-  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+  <a-scene embedded arjs="debugUIEnabled: false;">
     <!-- Explicitly define the camera with scale and position to prevent zoom-in -->
-    <a-camera gps-camera="simulateAltitude: false"></a-camera>
+    <a-camera gps-camera="simulateAltitude: true"></a-camera>
 
     <!-- Place 3D model at a specific GPS location -->
     <a-entity 
