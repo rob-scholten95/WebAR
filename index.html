@@ -44,13 +44,13 @@
   </div>
 
   <!-- AR.js Scene with Webcam source -->
-  <a-scene embedded arjs="sourceType: webcam; autoCameraPosition: false; debugUIEnabled: true;">
+  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
     <!-- Explicitly define the camera with scale and position to prevent zoom-in -->
-    <a-camera gps-camera="simulateAltitude: false" scale="1 1 1" position="0 0 0" fov="80"></a-camera>
+    <a-camera gps-camera="simulateAltitude: false"></a-camera>
 
     <!-- Place 3D model at a specific GPS location -->
     <a-entity 
-      gps-entity-place="latitude: 52.157958; longitude: 5.372917;"
+      gps-entity-place="latitude: 52.158083; longitude: 5.372243;"
       gltf-model="url(assets/kerk.glb)"
       scale="1 1 1">
     </a-entity>
@@ -61,7 +61,7 @@
     const compassNeedle = document.getElementById('compass-needle');
 
     let lastPosition = { latitude: null, longitude: null };
-    const entityPosition = { latitude: 52.157958, longitude: 5.372917 }; // Example target entity coordinates
+    const entityPosition = { latitude: 52.158083, longitude: 5.372243 }; // Example target entity coordinates
     const threshold = 0.0001; // Threshold for model updates
 
     // Watch GPS position and update bearing
