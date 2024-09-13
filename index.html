@@ -59,13 +59,13 @@
   <div id="distance">Distance: Calculating...</div>
 
   <!-- AR.js Scene with Webcam source -->
-  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: true;">
-    <!-- Explicitly define the camera with a field of view (fov) to avoid zoom-in -->
-    <a-camera gps-camera="simulateAltitude: false" fov="80"></a-camera>
+  <a-scene embedded arjs="sourceType: webcam; autoCameraPosition: false; debugUIEnabled: true;">
+    <!-- Explicitly define the camera with scale and position to prevent zoom-in -->
+    <a-camera gps-camera="simulateAltitude: false" scale="1 1 1" position="0 0 0" fov="80"></a-camera>
 
     <!-- Place 3D model at a specific GPS location -->
     <a-entity 
-      gps-entity-place="latitude: 52.158083; longitude: 5.372243;"
+      gps-entity-place="latitude: 52.157958; longitude: 5.372917;"
       gltf-model="url(assets/kerk.glb)"
       scale="1 1 1">
     </a-entity>
@@ -77,7 +77,7 @@
     const distanceDiv = document.getElementById('distance');
 
     let lastPosition = { latitude: null, longitude: null };
-    const entityPosition = { latitude: 52.158083, longitude: 5.372243 }; // Example target entity coordinates
+    const entityPosition = { latitude: 52.157958, longitude: 5.372917 }; // Example target entity coordinates
     const threshold = 0.0001; // Threshold for model updates
 
     // Watch GPS position and update bearing and distance
