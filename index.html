@@ -47,27 +47,16 @@
     </a-scene>
 
     <script>
-      // Get the GPS coordinates div
-      const gpsCoordinatesDiv = document.getElementById('gps-coordinates');
-    
-      // Listen for position updates from the gps-camera
-      document.querySelector('[gps-camera]').addEventListener('gps-camera-update-position', (event) => {
-        console.log('Position event fired:', event); // Debug log
-    
-        const { latitude, longitude, altitude } = event.detail.position;
-    
-        // Check if position data is available
-        if (latitude && longitude) {
-          // Update the div with the current GPS coordinates
-          gpsCoordinatesDiv.innerHTML = `
-            Latitude: ${latitude.toFixed(6)}<br>
-            Longitude: ${longitude.toFixed(6)}<br>
-            Altitude: ${altitude ? altitude.toFixed(2) + ' meters' : 'N/A'}
-          `;
-        } else {
-          console.log("GPS data not available yet.");
-        }
-      });
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          console.log('Latitude: ' + position.coords.latitude);
+          console.log('Longitude: ' + position.coords.longitude);
+        }, function(error) {
+          console.error('Error getting location:', error);
+        });
+      } else {
+        console.log('Geolocation is not supported by this browser.');
+      }
     </script>
   </body>
 </html>
