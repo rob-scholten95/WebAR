@@ -29,7 +29,7 @@
 
       <!-- Place 3D model at a specific GPS location -->
       <a-entity 
-        gps-entity-place="latitude: 52.158156; longitude: 5.372328;"
+        gps-entity-place="latitude: 52.157958; longitude: 5.372917;"
         gltf-model="url(https://rob-scholten95.github.io/WebAR/monkey.gltf)"
         scale="1 1 1">
       </a-entity>
@@ -38,15 +38,23 @@
 
     <script>
       const gpsCoordinatesDiv = document.getElementById('gps-coordinates');
-
-      // Use Geolocation API to track position
+    
+      let lastPosition = { latitude: null, longitude: null };
+      const threshold = 0.00001; // Define the threshold for ignoring small changes
+    
       if (navigator.geolocation) {
         navigator.geolocation.watchPosition(function(position) {
           const latitude = position.coords.latitude.toFixed(6);
           const longitude = position.coords.longitude.toFixed(6);
-
-          // Update the on-screen GPS coordinates
-          gpsCoordinatesDiv.innerHTML = `Latitude: ${latitude}<br>Longitude: ${longitude}`;
+    
+          if (shouldUpdatePosition(latitude, longitude)) {
+            // Update the last position
+            lastPosition.latitude = latitude;
+            lastPosition.longitude = longitude;
+    
+            // Update the on-screen GPS coordinates
+            gpsCoordinatesDiv.innerHTML = `Latitude: ${latitude}<br>Longitude: ${longitude}`;
+          }
         }, function(error) {
           gpsCoordinatesDiv.innerHTML = 'Error getting GPS location: ' + error.message;
         }, {
@@ -56,6 +64,18 @@
         });
       } else {
         gpsCoordinatesDiv.innerHTML = 'Geolocation not supported by this browser.';
+      }
+    
+      // Check if the position change exceeds the threshold
+      function shouldUpdatePosition(lat, lon) {
+        if (lastPosition.latitude === null || lastPosition.longitude === null) {
+          return true;
+        }
+    
+        const latDiff = Math.abs(lat - lastPosition.latitude);
+        const lonDiff = Math.abs(lon - lastPosition.longitude);
+    
+        return latDiff > threshold || lonDiff > threshold;
       }
     </script>
   </body>
