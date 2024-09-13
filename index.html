@@ -23,8 +23,11 @@
 
     <!-- AR.js Scene with Webcam source -->
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: true;">
-      <a-camera id="camera" gps-camera></a-camera> <!-- Enable gps-camera for AR.js -->
+      
+      <!-- Camera that uses GPS tracking -->
+      <a-camera gps-camera></a-camera>
 
+      <!-- Place 3D model at a specific GPS location -->
       <a-entity 
         gps-entity-place="latitude: 52.15806; longitude: 5.372301;"
         gltf-model="url(https://rob-scholten95.github.io/WebAR/monkey.gltf)"
@@ -35,7 +38,6 @@
 
     <script>
       const gpsCoordinatesDiv = document.getElementById('gps-coordinates');
-      const camera = document.getElementById('camera');
 
       // Use Geolocation API to track position
       if (navigator.geolocation) {
@@ -45,10 +47,6 @@
 
           // Update the on-screen GPS coordinates
           gpsCoordinatesDiv.innerHTML = `Latitude: ${latitude}<br>Longitude: ${longitude}`;
-
-          // Optional: Manually update the camera's position based on GPS coordinates (if needed)
-          // You can customize how this integrates with AR.js
-          camera.setAttribute('position', {x: latitude, y: 0, z: longitude});
         }, function(error) {
           gpsCoordinatesDiv.innerHTML = 'Error getting GPS location: ' + error.message;
         }, {
