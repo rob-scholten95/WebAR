@@ -2,12 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Viewport meta tag to prevent zoom and scaling issues on mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>AR.js with Compass</title>
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 
   <style>
+    /* General UI style to prevent zoom issues */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
     #gps-coordinates {
       position: fixed;
       bottom: 60px;
@@ -17,7 +27,7 @@
       background-color: rgba(0, 0, 0, 0.5);
       padding: 10px;
       border-radius: 5px;
-      z-index: 10;
+      z-index: 999; /* Ensure it is always on top */
     }
 
     /* Styling for the compass */
@@ -28,16 +38,27 @@
       transform: translateX(-50%);
       width: 50px;
       height: 50px;
-      z-index: 10;
+      z-index: 999; /* Ensure it is always on top */
     }
+
     #compass img {
       width: 100%;
       height: 100%;
       transform-origin: center;
     }
+
+    /* Prevent a-scene from taking over the entire screen */
+    a-scene {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
   </style>
 </head>
 <body>
+  <!-- UI Elements for GPS and Compass -->
   <div id="gps-coordinates">Waiting for GPS...</div>
   <div id="compass">
     <img id="compass-needle" src="compass.png" alt="Compass">
@@ -45,8 +66,8 @@
 
   <!-- AR.js Scene with Webcam source -->
   <a-scene embedded arjs="debugUIEnabled: false;">
-    <!-- Explicitly define the camera with scale and position to prevent zoom-in -->
-    <a-camera gps-camera="simulateAltitude: true"></a-camera>
+    <!-- Explicitly define the camera to avoid zoom issues -->
+    <a-camera gps-camera="simulateAltitude: true" fov="80" position="0 0 0" scale="1 1 1"></a-camera>
 
     <!-- Place 3D model at a specific GPS location -->
     <a-entity 
