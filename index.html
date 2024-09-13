@@ -16,10 +16,29 @@
         border-radius: 5px;
         z-index: 10;
       }
+
+      /* Styling for the compass */
+      #compass {
+        position: fixed;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 50px;
+        z-index: 10;
+      }
+      #compass img {
+        width: 100%;
+        height: 100%;
+        transform-origin: center;
+      }
     </style>
   </head>
   <body>
     <div id="gps-coordinates">Waiting for GPS...</div>
+    <div id="compass">
+      <img id="compass-needle" src="https://i.imgur.com/5TlLZfn.png" alt="Compass">
+    </div>
 
     <!-- AR.js Scene with Webcam source -->
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: true;">
@@ -38,22 +57,29 @@
 
     <script>
       const gpsCoordinatesDiv = document.getElementById('gps-coordinates');
-    
+      const compassNeedle = document.getElementById('compass-needle');
+
       let lastPosition = { latitude: null, longitude: null };
-      const threshold = 1; // Define the threshold for ignoring small changes
-    
+      const entityPosition = { latitude: 52.157958, longitude: 5.372917 }; // Example target entity coordinates
+      const threshold = 0.0001; // Define the threshold for ignoring small changes in coordinates
+
+      // Watch GPS position and update bearing
       if (navigator.geolocation) {
         navigator.geolocation.watchPosition(function(position) {
           const latitude = position.coords.latitude.toFixed(6);
           const longitude = position.coords.longitude.toFixed(6);
-    
+
           if (shouldUpdatePosition(latitude, longitude)) {
-            // Update the last position
             lastPosition.latitude = latitude;
             lastPosition.longitude = longitude;
-    
-            // Update the on-screen GPS coordinates
+
             gpsCoordinatesDiv.innerHTML = `Latitude: ${latitude}<br>Longitude: ${longitude}`;
+
+            // Calculate the bearing from device to entity
+            const bearing = calculateBearing(lastPosition.latitude, lastPosition.longitude, entityPosition.latitude, entityPosition.longitude);
+
+            // Update the compass needle's rotation
+            compassNeedle.style.transform = `rotate(${bearing}deg)`;
           }
         }, function(error) {
           gpsCoordinatesDiv.innerHTML = 'Error getting GPS location: ' + error.message;
@@ -65,16 +91,32 @@
       } else {
         gpsCoordinatesDiv.innerHTML = 'Geolocation not supported by this browser.';
       }
-    
+
+      // Calculate bearing between two GPS coordinates using the Haversine formula
+      function calculateBearing(lat1, lon1, lat2, lon2) {
+        const toRadians = (deg) => deg * Math.PI / 180;
+        const toDegrees = (rad) => rad * 180 / Math.PI;
+
+        const dLon = toRadians(lon2 - lon1);
+        const y = Math.sin(dLon) * Math.cos(toRadians(lat2));
+        const x = Math.cos(toRadians(lat1)) * Math.sin(toRadians(lat2)) - 
+                  Math.sin(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.cos(dLon);
+
+        let bearing = toDegrees(Math.atan2(y, x));
+        bearing = (bearing + 360) % 360; // Normalize to 0-360 degrees
+
+        return bearing;
+      }
+
       // Check if the position change exceeds the threshold
       function shouldUpdatePosition(lat, lon) {
         if (lastPosition.latitude === null || lastPosition.longitude === null) {
           return true;
         }
-    
+
         const latDiff = Math.abs(lat - lastPosition.latitude);
         const lonDiff = Math.abs(lon - lastPosition.longitude);
-    
+
         return latDiff > threshold || lonDiff > threshold;
       }
     </script>
