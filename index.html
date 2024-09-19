@@ -71,7 +71,7 @@
 
     <!-- Place 3D model at a specific GPS location -->
     <a-entity 
-      gps-entity-place="latitude: 52.157997; longitude: 5.372760;"
+      gps-entity-place="latitude: 52.158136; longitude: 5.372299;"
       gltf-model="url(monkey.glb)"
       scale="1 1 1">
     </a-entity>
@@ -82,7 +82,7 @@
     const compassNeedle = document.getElementById('compass-needle');
 
     let lastPosition = { latitude: null, longitude: null };
-    const entityPosition = { latitude: 52.157997, longitude: 5.372760 }; // Example target entity coordinates
+    const entityPosition = { latitude: 52.158136, longitude: 5.372299 }; // Example target entity coordinates
     const threshold = 0.0001; // Threshold for model updates
 
     // Watch GPS position and update bearing
