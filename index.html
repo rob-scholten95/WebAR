@@ -99,12 +99,12 @@
         compassNeedle.style.transform = `rotate(${adjustedBearing}deg)`;
 
         // Only update the model's position if the change exceeds the threshold
-        if (shouldUpdatePosition(latitude, longitude)) {
+        //if (shouldUpdatePosition(latitude, longitude)) {
           lastPosition.latitude = latitude;
           lastPosition.longitude = longitude;
 
           gpsCoordinatesDiv.innerHTML = `Latitude: ${latitude}<br>Longitude: ${longitude}`;
-        }
+        //}
       }, function(error) {
         gpsCoordinatesDiv.innerHTML = 'Error getting GPS location: ' + error.message;
       }, {
